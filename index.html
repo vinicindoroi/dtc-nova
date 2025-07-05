@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BAKING SODA TRICK REVEAL</title>
     
-    <!-- Facebook Pixel Code - Fixed CORS -->
+    <!-- Facebook Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -21,27 +21,13 @@
       fbq('track', 'PageView');
     </script>
 
-    <!-- UTMify Pixel - Fixed with proper error handling -->
+    <!-- UTMify Pixel - Static Loading -->
     <script>
-      (function() {
-        try {
-          window.pixelId = "681eb087803be4de5c3bd68b";
-          var a = document.createElement("script");
-          a.setAttribute("async", "");
-          a.setAttribute("defer", "");
-          a.setAttribute("crossorigin", "anonymous");
-          a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-          a.onerror = function() {
-            console.log('UTMify script failed to load - continuing without it');
-          };
-          document.head.appendChild(a);
-        } catch (error) {
-          console.log('UTMify initialization failed:', error);
-        }
-      })();
+      window.pixelId = "681eb087803be4de5c3bd68b";
     </script>
+    <script async defer src="https://cdn.utmify.com.br/scripts/pixel/pixel.js"></script>
 
-    <!-- Hotjar Tracking Code - Fixed CORS -->
+    <!-- Hotjar Tracking Code -->
     <script>
         (function(h,o,t,j,a,r){
             h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
@@ -57,7 +43,7 @@
         })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
     </script>
 
-    <!-- RedTrack Universal Script - Fixed with error handling -->
+    <!-- RedTrack Universal Script -->
     <script>
       (function() {
         try {

@@ -152,22 +152,12 @@ function App() {
         }
         
         // External pixel tracking
-        // Facebook Pixel tracking with error handling
-        try {
-          if (typeof window !== 'undefined' && (window as any).fbq) {
-            (window as any).fbq('track', 'PageView');
-          }
-        } catch (error) {
-          console.log('Facebook Pixel tracking failed:', error);
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+          (window as any).fbq('track', 'PageView');
         }
         
-        // UTMify tracking with error handling
-        try {
-          if (typeof window !== 'undefined' && (window as any).utmify) {
-            (window as any).utmify('track', 'PageView');
-          }
-        } catch (error) {
-          console.log('UTMify tracking failed:', error);
+        if (typeof window !== 'undefined' && (window as any).utmify) {
+          (window as any).utmify('track', 'PageView');
         }
       } catch (error) {
         console.error('Error initializing URL tracking:', error);
