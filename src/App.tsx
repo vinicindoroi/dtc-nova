@@ -28,19 +28,24 @@ function App() {
   // ✅ NEW: Prevent white page after errors
   useEffect(() => {
     // Global error handler to prevent white page
-    const handleGlobalError = (event: ErrorEvent) => {
+    const handleGlobalError = (event: Event | ErrorEvent) => {
+      // Type guard to check if it's an ErrorEvent
+      const errorEvent = event as ErrorEvent;
+      
       console.error('🚨 Global error caught:', event.error || event.message);
       
       // Prevent the error from causing a white screen
-      event.preventDefault();
+      if (typeof event.preventDefault === 'function') {
+        event.preventDefault();
+      }
       
       // Log to console for debugging
       console.log('🛠️ Error details:', {
-        message: event.message,
-        filename: event.filename,
-        lineno: event.lineno,
-        colno: event.colno,
-        error: event.error
+        message: errorEvent.message || 'Unknown error',
+        filename: errorEvent.filename || 'Unknown file',
+        lineno: errorEvent.lineno || 0,
+        colno: errorEvent.colno || 0,
+        error: errorEvent.error || 'No error object'
       });
       
       // Optional: Show a small error notification to the user
@@ -75,14 +80,14 @@ function App() {
     // Add unhandled rejection handler
     window.addEventListener('unhandledrejection', (event) => {
       console.error('🚨 Unhandled promise rejection:', event.reason);
-      event.preventDefault();
+      if (typeof event.preventDefault === 'function') {
+        event.preventDefault();
+      }
     });
     
     return () => {
       window.removeEventListener('error', handleGlobalError);
-      window.removeEventListener('unhandledrejection', (event) => {
-        event.preventDefault();
-      });
+      window.removeEventListener('unhandledrejection', () => {});
     };
   }, []);
 
