@@ -73,13 +73,13 @@ function App() {
 
   // ✅ NEW: 10-second delay for DTC content
   useEffect(() => {
-    console.log('🕐 Starting 10-second delay for DTC content...');
+    console.log('🕐 Starting 35min55s delay for DTC content...');
     
     const delayTimer = setTimeout(() => {
-      console.log('✅ 10 seconds passed - showing DTC content');
+      console.log('✅ 35min55s passed - showing DTC content');
       setShowPurchaseButton(true);
       setContentVisible(true);
-    }, 10000); // 10 seconds delay
+    }, 2155000); // 35 minutes and 55 seconds delay (35*60 + 55 = 2155 seconds * 1000 = 2155000ms)
 
     return () => {
       clearTimeout(delayTimer);
@@ -272,6 +272,7 @@ function App() {
           <VideoSection />
 
           {/* ✅ DTC Content with 10-second delay */}
+          {/* ✅ DTC Content with 35min55s delay */}
           {showPurchaseButton && (
             <ProductOffers 
               showPurchaseButton={showPurchaseButton}
@@ -282,6 +283,7 @@ function App() {
         </div>
 
         {/* ✅ All sections below also wait for the 10-second delay */}
+        {/* ✅ All sections below also wait for the 35min55s delay */}
         {contentVisible && (
           <>
             <TestimonialsSection />
@@ -340,6 +342,7 @@ function App() {
         )}
 
         {/* ✅ Footer sempre visível - mesmo antes da DTC */}
+        {/* ✅ Footer sempre visível - mesmo antes da DTC aparecer */}
         {!contentVisible && <Footer />}
       </div>
 
