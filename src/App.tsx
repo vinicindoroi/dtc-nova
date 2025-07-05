@@ -15,10 +15,11 @@ import { Footer } from './components/Footer';
 import { Modals } from './components/Modals';
 
 function App() {
-  const [showPurchaseButton, setShowPurchaseButton] = useState(true);
+  const [showPurchaseButton, setShowPurchaseButton] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [showUpsellPopup, setShowUpsellPopup] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState('');
+  const [contentVisible, setContentVisible] = useState(false);
 
   // Global error handler to prevent white page
   useEffect(() => {
@@ -71,6 +72,21 @@ function App() {
   }, []);
 
   const { trackVideoPlay, trackVideoProgress, trackOfferClick } = useAnalytics();
+
+  // ✅ NEW: 10-second delay for DTC content
+  useEffect(() => {
+    console.log('🕐 Starting 10-second delay for DTC content...');
+    
+    const delayTimer = setTimeout(() => {
+      console.log('✅ 10 seconds passed - showing DTC content');
+      setShowPurchaseButton(true);
+      setContentVisible(true);
+    }, 10000); // 10 seconds delay
+
+    return () => {
+      clearTimeout(delayTimer);
+    };
+  }, []);
 
   useEffect(() => {
     const initializeUrlTracking = () => {
@@ -288,65 +304,73 @@ function App() {
 
           <VideoSection />
 
-          <ProductOffers 
-            showPurchaseButton={showPurchaseButton}
-            onPurchase={handlePurchase}
-            onSecondaryPackageClick={handleSecondaryPackageClick}
-          />
+          {/* ✅ DTC Content with 10-second delay */}
+          {showPurchaseButton && (
+            <ProductOffers 
+              showPurchaseButton={showPurchaseButton}
+              onPurchase={handlePurchase}
+              onSecondaryPackageClick={handleSecondaryPackageClick}
+            />
+          )}
         </div>
 
-        <TestimonialsSection />
+        {/* ✅ All sections below also wait for the 10-second delay */}
+        {contentVisible && (
+          <>
+            <TestimonialsSection />
 
-        <DoctorsSection />
+            <DoctorsSection />
 
-        <NewsSection />
+            <NewsSection />
 
-        <GuaranteeSection />
+            <GuaranteeSection />
 
-        <section 
-          id="final-purchase-section"
-          data-purchase-section="true"
-          className="mt-16 sm:mt-20 w-full max-w-5xl mx-auto px-4 animate-fadeInUp animation-delay-2200"
-        >
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-4">
-              <span className="block">Ready to Transform</span>
-              <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
-                Your Life?
-              </span>
-            </h2>
-            <p className="text-lg sm:text-xl text-blue-700 font-semibold mb-2">
-              Choose your BlueDrops package below
-            </p>
-            <p className="text-sm sm:text-base text-blue-600">
-              Don't miss this opportunity to transform your health and confidence
-            </p>
-          </div>
+            <section 
+              id="final-purchase-section"
+              data-purchase-section="true"
+              className="mt-16 sm:mt-20 w-full max-w-5xl mx-auto px-4 animate-fadeInUp animation-delay-2200"
+            >
+              <div className="text-center mb-8 sm:mb-12">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-4">
+                  <span className="block">Ready to Transform</span>
+                  <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
+                    Your Life?
+                  </span>
+                </h2>
+                <p className="text-lg sm:text-xl text-blue-700 font-semibold mb-2">
+                  Choose your BlueDrops package below
+                </p>
+                <p className="text-sm sm:text-base text-blue-600">
+                  Don't miss this opportunity to transform your health and confidence
+                </p>
+              </div>
 
-          <div className="flex justify-center">
-            <div className="w-full max-w-md">
-              <ProductOffers 
-                showPurchaseButton={true}
-                onPurchase={handlePurchase}
-                onSecondaryPackageClick={handleSecondaryPackageClick}
-              />
-            </div>
-          </div>
+              <div className="flex justify-center">
+                <div className="w-full max-w-md">
+                  <ProductOffers 
+                    showPurchaseButton={true}
+                    onPurchase={handlePurchase}
+                    onSecondaryPackageClick={handleSecondaryPackageClick}
+                  />
+                </div>
+              </div>
 
-          <div className="text-center mt-8 sm:mt-12">
-            <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-blue-200 shadow-lg max-w-2xl mx-auto">
-              <h3 className="text-xl sm:text-2xl font-bold text-blue-900 mb-3">
-                🚀 Your Transformation Starts Today
-              </h3>
-              <p className="text-blue-700 text-sm sm:text-base leading-relaxed">
-                Join thousands of men who have already discovered the power of BlueDrops. 
-                With our 180-day guarantee, you have nothing to lose and everything to gain.
-              </p>
-            </div>
-          </div>
-        </section>
+              <div className="text-center mt-8 sm:mt-12">
+                <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-blue-200 shadow-lg max-w-2xl mx-auto">
+                  <h3 className="text-xl sm:text-2xl font-bold text-blue-900 mb-3">
+                    🚀 Your Transformation Starts Today
+                  </h3>
+                  <p className="text-blue-700 text-sm sm:text-base leading-relaxed">
+                    Join thousands of men who have already discovered the power of BlueDrops. 
+                    With our 180-day guarantee, you have nothing to lose and everything to gain.
+                  </p>
+                </div>
+              </div>
+            </section>
 
-        <Footer />
+            <Footer />
+          </>
+        )}
       </div>
 
       <Modals 
