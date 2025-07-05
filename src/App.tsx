@@ -155,10 +155,6 @@ function App() {
         if (typeof window !== 'undefined' && (window as any).fbq) {
           (window as any).fbq('track', 'PageView');
         }
-        
-        if (typeof window !== 'undefined' && (window as any).utmify) {
-          (window as any).utmify('track', 'PageView');
-        }
       } catch (error) {
         console.error('Error initializing URL tracking:', error);
       }
