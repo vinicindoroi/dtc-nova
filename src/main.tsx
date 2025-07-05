@@ -2,7 +2,6 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App.tsx';
-import { AdminDashboard } from './components/AdminDashboard.tsx';
 import { UpsellPage } from './pages/UpsellPage.tsx';
 import { DownsellPage } from './pages/DownsellPage.tsx';
 import './index.css';
@@ -13,7 +12,6 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App />} />
-        <Route path="/admin" element={<AdminDashboard />} />
         
         {/* Upsell Pages */}
         <Route path="/up1bt" element={<UpsellPage variant="1-bottle" />} />
