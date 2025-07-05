@@ -330,6 +330,12 @@ export const useAnalytics = () => {
         country: geolocationData.current?.country_name || 'Unknown'
       });
 
+      // Enhanced error handling and retry logic
+      let retryCount = 0;
+      const maxRetries = 3;
+      
+      while (retryCount < maxRetries) {
+        try {
       // Use circuit breaker for Supabase operations
       const { data, error } = await withCircuitBreaker(
         supabaseCircuitBreaker,
@@ -344,9 +350,33 @@ export const useAnalytics = () => {
         city: geolocationData.current?.city || null,
         region: geolocationData.current?.region || null,
         last_ping: new Date().toISOString(),
+        vturb_loaded: eventType === 'video_play' ? true : null,
         }).select('id')
       );
 
+          if (error) {
+            console.error(`❌ Supabase error (attempt ${retryCount + 1}):`, error);
+            
+            // Check for specific error types
+            if (error.code === 'PGRST116') {
+              console.error('❌ Table does not exist or no permissions');
+              throw new Error('Database table not found or no permissions');
+            } else if (error.code === '42P01') {
+              console.error('❌ Relation does not exist');
+              throw new Error('Database table does not exist');
+            } else if (error.message.includes('JWT')) {
+              console.error('❌ Authentication error');
+              throw new Error('Authentication failed');
+            }
+            
+            retryCount++;
+            if (retryCount < maxRetries) {
+              console.log(`🔄 Retrying in ${retryCount * 1000}ms...`);
+              await new Promise(resolve => setTimeout(resolve, retryCount * 1000));
+              continue;
+            }
+            throw error;
+          }
       // Store the record ID for the first event (page_enter) to use for ping updates
       if (eventType === 'page_enter' && data && data[0]) {
         sessionRecordId.current = data[0].id;
@@ -356,11 +386,29 @@ export const useAnalytics = () => {
         startPingInterval();
       }
 
-      if (error) throw error;
-      
       console.log(`✅ SUCESSO - Event tracked: ${eventType}`, enrichedEventData);
+          break; // Success, exit retry loop
+          
+        } catch (error) {
+          retryCount++;
+          if (retryCount >= maxRetries) {
+            throw error;
+          }
+          console.log(`🔄 Retrying database operation (${retryCount}/${maxRetries})...`);
+          await new Promise(resolve => setTimeout(resolve, retryCount * 1000));
+        }
+      }
+      
     } catch (error) {
       console.error(`❌ ERRO ao tracking event ${eventType}:`, error);
+      
+      // Enhanced error logging
+      if (error instanceof Error) {
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+      
       // Don't throw error - analytics should never break the app
     }
       },

@@ -216,6 +216,8 @@ export const AdminDashboard: React.FC = () => {
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
+      console.log('📊 Fetching analytics data...');
+      
       // Get all analytics data with new geolocation fields
       const { data: allEvents, error } = await supabase
         .from('vsl_analytics')
@@ -223,8 +225,11 @@ export const AdminDashboard: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      
+      console.log('📊 Raw analytics data:', allEvents?.length || 0, 'events');
 
       if (!allEvents) {
+        console.log('📊 No analytics data found');
         setLoading(false);
         return;
       }
@@ -233,6 +238,8 @@ export const AdminDashboard: React.FC = () => {
       const filteredEvents = allEvents.filter(event => 
         event.country_code !== 'BR' && event.country_name !== 'Brazil'
       );
+      
+      console.log('📊 Filtered events (non-BR):', filteredEvents.length);
 
       // Group events by session
       const sessionGroups = filteredEvents.reduce((acc, event) => {

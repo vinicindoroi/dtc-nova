@@ -208,8 +208,13 @@ export const TrackingTestPanel: React.FC = () => {
     updateStatus(index, { status: 'loading', message: 'Testando Supabase...' });
     
     try {
+      console.log('🧪 Testing Supabase connection...');
+      
       // Import supabase dynamically to test connection
       const { supabase } = await import('../lib/supabase');
+      
+      // First test: Check if we can connect
+      console.log('🧪 Step 1: Testing basic connection...');
       
       // Test a simple query
       const { data, error } = await supabase
@@ -218,23 +223,56 @@ export const TrackingTestPanel: React.FC = () => {
         .limit(1);
       
       if (error) {
+        console.error('🧪 Supabase query error:', error);
         updateStatus(index, { 
           status: 'error', 
           message: 'Erro de conexão com Supabase',
-          details: `Erro: ${error.message}`
+          details: `Erro: ${error.message} (Code: ${error.code || 'N/A'})`
+        });
+        return;
+      }
+      
+      console.log('🧪 Step 2: Testing insert operation...');
+      
+      // Test insert operation
+      const testData = {
+        session_id: `test_${Date.now()}`,
+        event_type: 'page_enter',
+        event_data: { test: true, timestamp: Date.now() },
+        ip: '127.0.0.1',
+        country_code: 'US',
+        country_name: 'United States',
+        city: 'Test City',
+        region: 'Test Region'
+      };
+      
+      const { data: insertData, error: insertError } = await supabase
+        .from('vsl_analytics')
+        .insert(testData)
+        .select('id');
+      
+      if (insertError) {
+        console.error('🧪 Supabase insert error:', insertError);
+        updateStatus(index, { 
+          status: 'warning', 
+          message: 'Conexão OK, mas erro ao inserir',
+          details: `Insert error: ${insertError.message} (Code: ${insertError.code || 'N/A'})`
         });
       } else {
+        console.log('🧪 Insert test successful:', insertData);
         updateStatus(index, { 
           status: 'success', 
           message: 'Supabase conectado e funcionando',
-          details: 'Banco de dados acessível, analytics funcionando'
+          details: `Banco acessível, insert OK. Test ID: ${insertData?.[0]?.id || 'N/A'}`
         });
       }
+      
     } catch (error) {
+      console.error('🧪 Supabase test error:', error);
       updateStatus(index, { 
         status: 'error', 
         message: 'Erro ao testar Supabase',
-        details: `Erro: ${error}`
+        details: `Erro: ${error instanceof Error ? error.message : String(error)}`
       });
     }
   };
