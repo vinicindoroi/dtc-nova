@@ -17,19 +17,13 @@ npm run dev
 src/
 ├── components/          # React components
 ├── hooks/              # Custom hooks
-├── lib/                # Libraries and utilities
 ├── pages/              # Page components
 └── utils/              # Utility functions
 ```
 
 ## 🔧 Environment Setup
 
-1. Copy `.env.example` to `.env`
-2. Fill in your Supabase credentials:
-   ```
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+No environment variables needed! The project now works completely standalone without external dependencies.
 
 ## 🌐 StackBlitz Collaboration
 
@@ -37,17 +31,13 @@ This project is configured for seamless StackBlitz collaboration:
 
 - **Auto-sync**: Changes sync with GitHub automatically
 - **Environment**: Pre-configured with all dependencies
-- **Database**: Connected to Supabase for analytics
-- **Admin Dashboard**: Access via `/admin` route
-
-### Admin Credentials
-- Email: `admin@magicbluedrops.com`
-- Password: `gotinhaazul`
+- **Local Analytics**: Events stored in browser localStorage
+- **No Database Required**: Fully functional without external services
 
 ## 📊 Features
 
-- **VSL Analytics**: Real-time user tracking
-- **Admin Dashboard**: Comprehensive analytics
+- **VSL Analytics**: Local tracking via localStorage and console
+- **External Pixels**: Facebook Pixel, Utmify, Hotjar integration
 - **Responsive Design**: Mobile-first approach
 - **Performance Optimized**: Fast loading and smooth interactions
 
@@ -70,17 +60,12 @@ When working in StackBlitz:
 ## 📱 Routes
 
 - `/` - Main VSL page
-- `/admin` - Admin dashboard
 - `/up1bt`, `/up3bt`, `/up6bt` - Upsell pages
 - `/dws1`, `/dws2`, `/dw3` - Downsell pages
 
-## 🔐 Security
-
-- Row Level Security (RLS) enabled on Supabase
-- Admin authentication required for dashboard
-- Analytics data filtered (excludes Brazilian IPs)
-
 ## 📈 Analytics Events
+
+All events are now tracked locally in browser storage and sent to external pixels:
 
 - `page_enter` - User enters the page
 - `video_play` - VTurb video loads successfully
@@ -96,10 +81,29 @@ When working in StackBlitz:
 - **Components**: Glassmorphism effects
 - **Animations**: Smooth transitions and micro-interactions
 
+## 📊 Local Analytics
+
+Events are stored in browser localStorage and can be viewed in browser dev tools:
+
+```javascript
+// View stored events
+JSON.parse(localStorage.getItem('analytics_events'))
+
+// View geolocation data
+JSON.parse(sessionStorage.getItem('geolocation_data'))
+```
+
+## 🔗 External Integrations
+
+- **Facebook Pixel**: Automatic event tracking
+- **Utmify**: Brazilian pixel tracking
+- **Hotjar**: User behavior recording
+- **RedTrack**: Affiliate tracking with CID parameters
+
 ## 📞 Support
 
 For technical support or questions about the project, contact the development team.
 
 ---
 
-**Note**: This project is optimized for production use with real user analytics and payment processing.
+**Note**: This project is now fully standalone and doesn't require any external database or API keys to function.
