@@ -25,7 +25,8 @@ import {
   Zap,
   Settings,
   Lock,
-  LogOut
+  LogOut,
+  TrendingDown
 } from 'lucide-react';
 
 interface AnalyticsData {
@@ -101,7 +102,7 @@ export const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
-  const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack' | 'settings'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack'>('analytics');
 
   const navigate = useNavigate();
 
@@ -200,6 +201,8 @@ export const AdminDashboard: React.FC = () => {
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
+      console.log('📊 Fetching analytics data...');
+      
       // Get all analytics data with new geolocation fields
       const { data: allEvents, error } = await supabase
         .from('vsl_analytics')
@@ -207,8 +210,11 @@ export const AdminDashboard: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      
+      console.log('📊 Retrieved', allEvents?.length || 0, 'events from database');
 
       if (!allEvents) {
+        console.warn('⚠️ No events returned from database');
         setLoading(false);
         return;
       }
@@ -489,6 +495,17 @@ export const AdminDashboard: React.FC = () => {
       setLastUpdated(new Date());
     } catch (error) {
       console.error('Error fetching analytics:', error);
+      
+      // Show user-friendly error message
+      if (error instanceof Error) {
+        if (error.message.includes('JWT')) {
+          console.error('💡 Authentication error - check Supabase connection');
+        } else if (error.message.includes('Failed to fetch')) {
+          console.error('💡 Network error - check internet connection');
+        } else if (error.message.includes('relation') || error.message.includes('table')) {
+          console.error('💡 Database table missing - run migration');
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -701,7 +718,7 @@ export const AdminDashboard: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
-                  Dashboard VSL Analytics
+                  Dashboard VSL Analytics {!analytics.totalSessions && loading && '(Conectando...)'}
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
                   Monitoramento em tempo real (excluindo Brasil)
@@ -711,6 +728,7 @@ export const AdminDashboard: React.FC = () => {
                 <div className="text-xs sm:text-sm text-gray-500">
                   <Calendar className="w-3 sm:w-4 h-3 sm:h-4 inline mr-1" />
                   Última atualização: {formatDate(lastUpdated.toISOString())}
+                  {loading && <span className="ml-2 text-blue-600">Carregando...</span>}
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -777,6 +795,40 @@ export const AdminDashboard: React.FC = () => {
           {/* Tab Content */}
           {activeTab === 'analytics' ? (
             <>
+              {/* No Data Message */}
+              {analytics.totalSessions === 0 && !loading && (
+                <div className="text-center mt-8 p-8 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <TrendingDown className="w-6 h-6 text-red-500" />
+                  </div>
+                  <p className="text-blue-700 font-medium text-lg mb-2">
+                    🔌 Problema de Conexão com Supabase
+                  </p>
+                  <p className="text-blue-600 text-sm">
+                    Clique em "Connect to Supabase" no canto superior direito para configurar
+                  </p>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                  >
+                    Tentar Novamente
+                  </button>
+                </div>
+              )}
+              
+              {/* Loading State */}
+              {loading && analytics.totalSessions === 0 && (
+                <div className="text-center mt-8 p-8 bg-blue-50 rounded-lg border border-blue-200">
+                  <RefreshCw className="w-12 h-12 text-blue-400 mx-auto mb-4 animate-spin" />
+                  <p className="text-blue-700 font-medium text-lg mb-2">
+                    🔄 Conectando ao Supabase...
+                  </p>
+                  <p className="text-blue-600 text-sm">
+                    Verificando conexão com o banco de dados
+                  </p>
+                </div>
+              )}
+
               {/* Live Users Highlight - Mobile optimized */}
               <div className="mb-4 sm:mb-8">
                 <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-lg">

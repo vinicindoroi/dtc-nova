@@ -208,13 +208,28 @@ export const TrackingTestPanel: React.FC = () => {
     updateStatus(index, { status: 'loading', message: 'Testando Supabase...' });
     
     try {
-      console.log('🧪 Testing Supabase connection...');
+      console.log('🧪 Starting comprehensive Supabase test...');
       
       // Import supabase dynamically to test connection
       const { supabase } = await import('../lib/supabase');
       
-      // First test: Check if we can connect
-      console.log('🧪 Step 1: Testing basic connection...');
+      // Step 1: Test environment variables
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseKey) {
+        updateStatus(index, { 
+          status: 'error', 
+          message: 'Variáveis de ambiente não configuradas',
+          details: `URL: ${supabaseUrl ? 'OK' : 'MISSING'}, Key: ${supabaseKey ? 'OK' : 'MISSING'}`
+        });
+        return;
+      }
+      
+      console.log('🧪 Step 1: Environment variables OK');
+      
+      // Step 2: Test basic connection
+      console.log('🧪 Step 2: Testing basic connection...');
       
       // Test a simple query
       const { data, error } = await supabase
@@ -223,16 +238,17 @@ export const TrackingTestPanel: React.FC = () => {
         .limit(1);
       
       if (error) {
-        console.error('🧪 Supabase query error:', error);
+        console.error('🧪 Step 2 failed - Supabase query error:', error);
         updateStatus(index, { 
           status: 'error', 
           message: 'Erro de conexão com Supabase',
-          details: `Erro: ${error.message} (Code: ${error.code || 'N/A'})`
+          details: `${error.message} (Code: ${error.code || 'N/A'})`
         });
         return;
       }
       
-      console.log('🧪 Step 2: Testing insert operation...');
+      console.log('🧪 Step 2 passed - Basic connection OK');
+      console.log('🧪 Step 3: Testing insert operation...');
       
       // Test insert operation
       const testData = {
@@ -252,27 +268,69 @@ export const TrackingTestPanel: React.FC = () => {
         .select('id');
       
       if (insertError) {
-        console.error('🧪 Supabase insert error:', insertError);
+        console.error('🧪 Step 3 failed - Insert error:', insertError);
         updateStatus(index, { 
           status: 'warning', 
           message: 'Conexão OK, mas erro ao inserir',
-          details: `Insert error: ${insertError.message} (Code: ${insertError.code || 'N/A'})`
+          details: `Insert: ${insertError.message} (${insertError.code || 'N/A'})`
         });
       } else {
-        console.log('🧪 Insert test successful:', insertData);
+        console.log('🧪 Step 3 passed - Insert successful:', insertData);
+        
+        // Step 4: Test update operation
+        if (insertData?.[0]?.id) {
+          console.log('🧪 Step 4: Testing update operation...');
+          
+          const { error: updateError } = await supabase
+            .from('vsl_analytics')
+            .update({ last_ping: new Date().toISOString() })
+            .eq('id', insertData[0].id);
+          
+          if (updateError) {
+            console.warn('🧪 Step 4 warning - Update failed:', updateError);
+          } else {
+            console.log('🧪 Step 4 passed - Update successful');
+          }
+          
+          // Clean up test record
+          await supabase
+            .from('vsl_analytics')
+            .delete()
+            .eq('id', insertData[0].id);
+        }
+        
         updateStatus(index, { 
           status: 'success', 
           message: 'Supabase conectado e funcionando',
-          details: `Banco acessível, insert OK. Test ID: ${insertData?.[0]?.id || 'N/A'}`
+          details: `Todas as operações funcionando. URL: ${supabaseUrl.substring(0, 30)}...`
         });
       }
       
     } catch (error) {
-      console.error('🧪 Supabase test error:', error);
+      console.error('🧪 Comprehensive test failed:', error);
+      
+      let errorMessage = 'Erro desconhecido';
+      let errorDetails = String(error);
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        if (error.message.includes('Failed to fetch')) {
+          errorMessage = 'Erro de rede - verifique conexão';
+          errorDetails = 'Não foi possível conectar ao Supabase';
+        } else if (error.message.includes('JWT')) {
+          errorMessage = 'Erro de autenticação';
+          errorDetails = 'Chave de API inválida ou expirada';
+        } else if (error.message.includes('environment variable')) {
+          errorMessage = 'Configuração incompleta';
+          errorDetails = 'Clique em "Connect to Supabase" no Bolt';
+        }
+      }
+      
       updateStatus(index, { 
         status: 'error', 
-        message: 'Erro ao testar Supabase',
-        details: `Erro: ${error instanceof Error ? error.message : String(error)}`
+        message: errorMessage,
+        details: errorDetails
       });
     }
   };
