@@ -17,8 +17,6 @@ import { Modals } from './components/Modals';
 function App() {
   const [showPurchaseButton, setShowPurchaseButton] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const [showUpsellPopup, setShowUpsellPopup] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState('');
   const [contentVisible, setContentVisible] = useState(false);
 
   // Global error handler to prevent white page
@@ -249,25 +247,6 @@ function App() {
     };
   }, []);
 
-  const handleSecondaryPackageClick = (packageType: '1-bottle' | '3-bottle') => {
-    setSelectedPackage(packageType);
-    setShowUpsellPopup(true);
-  };
-
-  const closeUpsellPopup = () => {
-    setShowUpsellPopup(false);
-    setSelectedPackage('');
-  };
-
-  const getUpsellSavings = (packageType: string) => {
-    if (packageType === '3-bottle') {
-      return 102;
-    } else if (packageType === '1-bottle') {
-      return 240;
-    }
-    return 0;
-  };
-
   const handlePurchase = (packageType: '1-bottle' | '3-bottle' | '6-bottle') => {
     trackOfferClick(packageType);
     
@@ -278,18 +257,6 @@ function App() {
     };
     
     window.location.href = links[packageType];
-  };
-
-  const handleUpsellAccept = () => {
-    handlePurchase('6-bottle');
-    closeUpsellPopup();
-  };
-
-  const handleUpsellRefuse = () => {
-    if (selectedPackage) {
-      handlePurchase(selectedPackage as '1-bottle' | '3-bottle' | '6-bottle');
-    }
-    closeUpsellPopup();
   };
 
   return (
@@ -309,7 +276,7 @@ function App() {
             <ProductOffers 
               showPurchaseButton={showPurchaseButton}
               onPurchase={handlePurchase}
-              onSecondaryPackageClick={handleSecondaryPackageClick}
+              onSecondaryPackageClick={handlePurchase}
             />
           )}
         </div>
@@ -350,7 +317,7 @@ function App() {
                   <ProductOffers 
                     showPurchaseButton={true}
                     onPurchase={handlePurchase}
-                    onSecondaryPackageClick={handleSecondaryPackageClick}
+                    onSecondaryPackageClick={handlePurchase}
                   />
                 </div>
               </div>
@@ -376,16 +343,6 @@ function App() {
         {!contentVisible && <Footer />}
       </div>
 
-      <Modals 
-        showPopup={false}
-        showUpsellPopup={showUpsellPopup}
-        selectedPackage={selectedPackage}
-        onClosePopup={() => {}}
-        onCloseUpsellPopup={closeUpsellPopup}
-        onUpsellAccept={handleUpsellAccept}
-        onUpsellRefuse={handleUpsellRefuse}
-        getUpsellSavings={getUpsellSavings}
-      />
     </div>
   );
 }

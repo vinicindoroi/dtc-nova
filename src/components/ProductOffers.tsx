@@ -5,7 +5,7 @@ import { buildUrlWithParams, trackPurchase } from '../utils/urlUtils';
 interface ProductOffersProps {
   showPurchaseButton: boolean;
   onPurchase: (packageType: '1-bottle' | '3-bottle' | '6-bottle') => void;
-  onSecondaryPackageClick: (packageType: '1-bottle' | '3-bottle') => void;
+  onSecondaryPackageClick: (packageType: '1-bottle' | '3-bottle' | '6-bottle') => void;
 }
 
 export const ProductOffers: React.FC<ProductOffersProps> = ({
@@ -52,7 +52,7 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
     // Track the secondary package click
     trackPurchase(purchaseValues[packageType], 'BRL', `${packageType}-secondary`);
     
-    // Call the original handler
+    // ✅ FIXED: Go directly to purchase instead of showing popup
     onSecondaryPackageClick(packageType);
   };
 
@@ -201,7 +201,7 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
             {/* CTA Button */}
             <div className="relative mb-2">
               <button 
-                onClick={() => handleSecondaryClick('3-bottle')}
+                onClick={() => onPurchase('3-bottle')}
                 className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-2 sm:py-2.5 px-2 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-xs sm:text-sm border border-white/30"
               >
                 <span>BUY NOW</span>
@@ -272,7 +272,7 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
             {/* CTA Button */}
             <div className="relative mb-2">
               <button 
-                onClick={() => handleSecondaryClick('1-bottle')}
+                onClick={() => onPurchase('1-bottle')}
                 className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-2 sm:py-2.5 px-2 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-xs sm:text-sm border border-white/30"
               >
                 <span>BUY NOW</span>
