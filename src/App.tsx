@@ -79,12 +79,54 @@ function App() {
       console.log('✅ 35min55s passed - showing DTC content');
       setShowPurchaseButton(true);
       setContentVisible(true);
+      
+      // ✅ NEW: Auto-scroll to 6-bottle package when DTC opens
+      setTimeout(() => {
+        scrollToSixBottlePackage();
+      }, 500); // Wait 500ms for content to render
     }, 2155000); // 35 minutes and 55 seconds delay (35*60 + 55 = 2155 seconds * 1000 = 2155000ms)
 
     return () => {
       clearTimeout(delayTimer);
     };
   }, []);
+
+  // ✅ NEW: Function to scroll to 6-bottle package
+  const scrollToSixBottlePackage = () => {
+    try {
+      // Look for the 6-bottle package container
+      const sixBottleSection = document.getElementById('six-bottle-package') || 
+                              document.querySelector('[data-purchase-section]') ||
+                              document.querySelector('.product-offers');
+      
+      if (sixBottleSection) {
+        console.log('📍 Auto-scrolling to 6-bottle package after DTC opens');
+        
+        // Smooth scroll to the 6-bottle section
+        sixBottleSection.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
+        
+        // Optional: Add a subtle highlight effect to draw attention
+        sixBottleSection.style.transition = 'all 0.8s ease';
+        sixBottleSection.style.transform = 'scale(1.02)';
+        sixBottleSection.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
+        
+        // Remove highlight after 4 seconds
+        setTimeout(() => {
+          sixBottleSection.style.transform = 'scale(1)';
+          sixBottleSection.style.boxShadow = '';
+        }, 4000);
+        
+      } else {
+        console.log('⚠️ 6-bottle package section not found for auto-scroll');
+      }
+    } catch (error) {
+      console.error('Error scrolling to 6-bottle package:', error);
+    }
+  };
 
   useEffect(() => {
     const initializeUrlTracking = () => {
