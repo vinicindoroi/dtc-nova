@@ -371,6 +371,9 @@ function App() {
             <Footer />
           </>
         )}
+
+        {/* ✅ Footer sempre visível - mesmo antes da DTC */}
+        {!contentVisible && <Footer />}
       </div>
 
       <Modals 
