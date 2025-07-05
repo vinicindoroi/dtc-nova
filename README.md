@@ -16,14 +16,14 @@ npm run dev
 ```
 src/
 ├── components/          # React components
-├── hooks/              # Custom hooks
+├── hooks/              # Custom hooks (simplified)
 ├── pages/              # Page components
 └── utils/              # Utility functions
 ```
 
 ## 🔧 Environment Setup
 
-No environment variables needed! The project now works completely standalone without external dependencies.
+No environment variables needed! The project works completely standalone.
 
 ## 🌐 StackBlitz Collaboration
 
@@ -31,15 +31,16 @@ This project is configured for seamless StackBlitz collaboration:
 
 - **Auto-sync**: Changes sync with GitHub automatically
 - **Environment**: Pre-configured with all dependencies
-- **Local Analytics**: Events stored in browser localStorage
 - **No Database Required**: Fully functional without external services
+- **No Analytics**: Clean, simple implementation
 
 ## 📊 Features
 
-- **VSL Analytics**: Local tracking via localStorage and console
+- **VSL Video Player**: VTurb integration for video playback
 - **External Pixels**: Facebook Pixel, Utmify, Hotjar integration
 - **Responsive Design**: Mobile-first approach
 - **Performance Optimized**: Fast loading and smooth interactions
+- **Clean Architecture**: No unnecessary tracking or analytics
 
 ## 🔄 Sync Instructions
 
@@ -63,35 +64,12 @@ When working in StackBlitz:
 - `/up1bt`, `/up3bt`, `/up6bt` - Upsell pages
 - `/dws1`, `/dws2`, `/dw3` - Downsell pages
 
-## 📈 Analytics Events
-
-All events are now tracked locally in browser storage and sent to external pixels:
-
-- `page_enter` - User enters the page
-- `video_play` - VTurb video loads successfully
-- `video_progress` - User reaches milestones (7:45 lead, 35:55 pitch)
-- `pitch_reached` - User reaches pitch moment
-- `offer_click` - User clicks purchase buttons
-- `page_exit` - User leaves the page
-
 ## 🎨 Design System
 
 - **Colors**: Blue gradient theme
 - **Typography**: Inter font family
 - **Components**: Glassmorphism effects
 - **Animations**: Smooth transitions and micro-interactions
-
-## 📊 Local Analytics
-
-Events are stored in browser localStorage and can be viewed in browser dev tools:
-
-```javascript
-// View stored events
-JSON.parse(localStorage.getItem('analytics_events'))
-
-// View geolocation data
-JSON.parse(sessionStorage.getItem('geolocation_data'))
-```
 
 ## 🔗 External Integrations
 
@@ -106,4 +84,4 @@ For technical support or questions about the project, contact the development te
 
 ---
 
-**Note**: This project is now fully standalone and doesn't require any external database or API keys to function.
+**Note**: This project is now fully standalone and doesn't require any external database, API keys, or analytics to function. It's clean, simple, and focused on the core VSL functionality.
